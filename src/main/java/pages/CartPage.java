@@ -6,8 +6,10 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 
+import java.util.List;
 
-public class CartPage extends BasePage {
+
+public class CartPage {
     WebDriver driver;
 
     public CartPage (WebDriver driver){
@@ -18,18 +20,14 @@ public class CartPage extends BasePage {
     @FindBy (xpath = "//div[contains(@class,'list')]/span[text()]")
     public WebElement warrantyButton;
 
-    @FindBy ( xpath = "//span[@class='price__current'][1]")
-    public WebElement cartProduct1Price;
 
-    @FindBy ( xpath = "//span[@class='price__current'][2]")
-    public WebElement cartProduct2Price;
+    public List<WebElement> cartTry(){
+        return this.driver.findElements(By.xpath("//span[@class='price__current']"));
+    }
 
-    @FindBy ( xpath = "//span[@class='price__current'][3]")
-    public WebElement cartTotalPrice;
-
-
-    @FindBy (xpath = "//button[text()='Удалить'][2]")
-    public WebElement delete2ProductButton;
+    public List<WebElement> deleteTry(){
+        return this.driver.findElements(By.xpath("//button[text()='Удалить']"));
+    }
 
     @FindBy (xpath = "//span[text()='Основные товары ']/span")
     public WebElement amountOfCartProducts;
@@ -43,27 +41,28 @@ public class CartPage extends BasePage {
     @FindBy (xpath = "//span[contains(text(),'Вернуть')]")
     public WebElement returnDeletedProductButton;
 
+    @FindBy (xpath = "//span[@class='restore-last-removed']")
+    public WebElement removedDeleteButton;
+
     public String warrantyCheck(){
         return warrantyButton.getText();
     }
 
-    public int getCartProduct1Price(){
-        return Integer.parseInt(cartProduct1Price.getText().replaceAll("[^\\d]",""));
+    public int getCartProduct1Price(List<WebElement> cart){
+        return Integer.parseInt(cart.get(0).getText().replaceAll("[^\\d]",""));
     }
 
-    public int getCartProduct2Price(){
-        return Integer.parseInt(cartProduct2Price.getText().replaceAll("[^\\d]",""));
+    public int getCartProduct2Price(List<WebElement> cart){
+        return Integer.parseInt(cart.get(1).getText().replaceAll("[^\\d]",""));
     }
 
-    public int getCartTotalPrice(){
-        return Integer.parseInt(cartTotalPrice.getText().replaceAll("[^\\d]",""));
+    public int getCartTotalPrice(List<WebElement> cart){
+        return Integer.parseInt(cart.get(2).getText().replaceAll("[^\\d]",""));
     }
 
 
-
-
-    public void delete2Product(){
-        delete2ProductButton.click();
+    public void delete2Product(List<WebElement> delete){
+        delete.get(1).click();
     }
 
     public int getAmountOfCartProducts(){

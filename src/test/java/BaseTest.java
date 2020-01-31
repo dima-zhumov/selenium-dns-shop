@@ -42,6 +42,7 @@ public class BaseTest {
         PSPage psPage = new PSPage(driver);
         DetroitPage detroitPage = new DetroitPage(driver);
         CartPage cartPage = new CartPage(driver);
+        Product product = new Product();
 
         dnsPage.inputSearchPS();
         searchPage.goToPSPage();
@@ -54,23 +55,25 @@ public class BaseTest {
         dnsPage.inputSearchDetroit();
         int priceForDetroit = detroitPage.getPriceCurrent();
         detroitPage.addToCart();
-        Thread.sleep(5000);
-        wait.until(ExpectedConditions.elementToBeClickable(detroitPage.CartPrice));
+        wait.until(ExpectedConditions.elementToBeClickable(detroitPage.CartButton));
+        wait.until(ExpectedConditions.visibilityOf(detroitPage.CartButton));
         Assert.assertEquals("Ошибка цена корзины не совпадает с суммой покупок",
                 priceForPsWithWarranty + priceForDetroit,detroitPage.getCartPrice());
         detroitPage.goToCart();
-        Thread.sleep(5000);
+        wait.until(ExpectedConditions.visibilityOf(cartPage.deleteTry().get(0)));
         String compare = "Продленная гарантия на 24 мес. ";
-        Thread.sleep(5000);
         Assert.assertTrue("Ошибка, гарантия не совпадает", cartPage.warrantyCheck().contains(compare));
-        int priceForPsWithWarrantyWithDetroit = cartPage.getCartTotalPrice();
-        Assert.assertEquals("Ошибка цена PS не совпадает",priceForPs,cartPage.getCartProduct1Price());
-        Assert.assertEquals("Ошибка цена Detroit не совпадает",priceForDetroit,cartPage.getCartProduct2Price());
+        int priceForPsWithWarrantyWithDetroit = cartPage.getCartTotalPrice(cartPage.cartTry());
+        Assert.assertEquals("Ошибка цена PS не совпадает",priceForPs,cartPage.getCartProduct1Price(cartPage.cartTry()));
+        Assert.assertEquals("Ошибка цена Detroit не совпадает",priceForDetroit,cartPage.getCartProduct2Price(cartPage.cartTry()));
         Assert.assertEquals("Ошибка цена корзины не совпадает",
                 priceForPsWithWarranty + priceForDetroit, priceForPsWithWarrantyWithDetroit);
-        cartPage.delete2Product();
-        Assert.assertEquals("Ошибка, в корзине есть Detroit",cartPage.getAmountOfCartProducts(),1);
+        cartPage.delete2Product(cartPage.deleteTry());
+        wait.until(ExpectedConditions.visibilityOf(cartPage.removedDeleteButton));
+        wait.until(ExpectedConditions.elementToBeClickable(cartPage.removedDeleteButton));
+     //   wait.until(ExpectedConditions.invisibilityOf(cartPage.deleteTry().get(1)));
         Thread.sleep(5000);
+        Assert.assertEquals("Ошибка, в корзине есть Detroit",cartPage.getAmountOfCartProducts(),1);
         Assert.assertEquals("Ошибка, сумма корзины не уменьшилась",
                 detroitPage.getCartPrice(), priceForPsWithWarrantyWithDetroit - priceForDetroit);
 
