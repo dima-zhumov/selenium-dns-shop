@@ -1,0 +1,9 @@
+Product.class
+pages\BasePage.class
+pages\PSPage.class
+TestProperties.class
+pages\CartPage.class
+pages\SearchPage.class
+pages\DNSPage.class
+pages\App.class
+pages\DetroitPage.class
