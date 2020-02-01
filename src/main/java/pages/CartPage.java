@@ -9,7 +9,7 @@ import org.openqa.selenium.support.PageFactory;
 import java.util.List;
 
 
-public class CartPage {
+public class CartPage extends BasePage {
     WebDriver driver;
 
     public CartPage (WebDriver driver){
@@ -38,9 +38,6 @@ public class CartPage {
     @FindBy (xpath = "//span[contains(@class,'price') and contains(@class,'applied')]")
     public WebElement priceOfWarranty;
 
-    @FindBy (xpath = "//span[contains(text(),'Вернуть')]")
-    public WebElement returnDeletedProductButton;
-
     @FindBy (xpath = "//span[@class='restore-last-removed']")
     public WebElement removedDeleteButton;
 
@@ -57,7 +54,7 @@ public class CartPage {
     }
 
     public int getCartTotalPrice(List<WebElement> cart){
-        return Integer.parseInt(cart.get(2).getText().replaceAll("[^\\d]",""));
+        return Integer.parseInt(cart.get(cart.size()-1).getText().replaceAll("[^\\d]",""));
     }
 
 
@@ -69,7 +66,7 @@ public class CartPage {
         return Integer.parseInt(amountOfCartProducts.getText());
     }
 
-    public void AddAmountOfProduct(){
+    public void addAmountOfProduct(){
         addAmountOfProductButton.click();
     }
 
@@ -77,8 +74,8 @@ public class CartPage {
        return priceOfWarranty.getText();
     }
 
-    public void returnDeletedProductButton(){
-        returnDeletedProductButton.click();
+    public void removedDeletedProduct(){
+        removedDeleteButton.click();
     }
 
 

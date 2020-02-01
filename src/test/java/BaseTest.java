@@ -2,14 +2,17 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import pages.*;
 
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 public class BaseTest {
     protected static WebDriver driver;
@@ -36,6 +39,7 @@ public class BaseTest {
     public void DNSShop() throws InterruptedException{
         driver.navigate().to(properties.getProperty("app.url"));
         WebDriverWait wait = new WebDriverWait(driver,30);
+       // Wait<WebDriver> wait = new WebDriverWait(driver, 10, 1000);
 
         DNSPage dnsPage = new DNSPage(driver);
         SearchPage searchPage = new SearchPage(driver);
@@ -56,7 +60,6 @@ public class BaseTest {
         int priceForDetroit = detroitPage.getPriceCurrent();
         detroitPage.addToCart();
         wait.until(ExpectedConditions.elementToBeClickable(detroitPage.CartButton));
-        wait.until(ExpectedConditions.visibilityOf(detroitPage.CartButton));
         Assert.assertEquals("Ошибка цена корзины не совпадает с суммой покупок",
                 priceForPsWithWarranty + priceForDetroit,detroitPage.getCartPrice());
         detroitPage.goToCart();
@@ -69,13 +72,23 @@ public class BaseTest {
         Assert.assertEquals("Ошибка цена корзины не совпадает",
                 priceForPsWithWarranty + priceForDetroit, priceForPsWithWarrantyWithDetroit);
         cartPage.delete2Product(cartPage.deleteTry());
-        wait.until(ExpectedConditions.visibilityOf(cartPage.removedDeleteButton));
         wait.until(ExpectedConditions.elementToBeClickable(cartPage.removedDeleteButton));
-     //   wait.until(ExpectedConditions.invisibilityOf(cartPage.deleteTry().get(1)));
-        Thread.sleep(5000);
         Assert.assertEquals("Ошибка, в корзине есть Detroit",cartPage.getAmountOfCartProducts(),1);
         Assert.assertEquals("Ошибка, сумма корзины не уменьшилась",
-                detroitPage.getCartPrice(), priceForPsWithWarrantyWithDetroit - priceForDetroit);
-
+                cartPage.getCartTotalPrice(cartPage.cartTry()), priceForPsWithWarrantyWithDetroit - priceForDetroit);
+        cartPage.addAmountOfProduct();
+        wait.until(ExpectedConditions.elementToBeClickable(cartPage.addAmountOfProductButton));
+        //wait.until(ExpectedConditions.attributeToBe(cartPage.amountOfCartProducts,"text","2"));
+        Thread.sleep(2000);
+        cartPage.addAmountOfProduct();
+        wait.until(ExpectedConditions.elementToBeClickable(cartPage.addAmountOfProductButton));
+        //wait.until(ExpectedConditions.attributeToBe(cartPage.amountOfCartProducts,"text","3"));
+        Thread.sleep(2000);
+        Assert.assertEquals("В корзине нет 3х продуктов",cartPage.getAmountOfCartProducts(),3);
+        Assert.assertEquals("Сумма корзины не равна 3м PS",
+                cartPage.getCartTotalPrice(cartPage.cartTry()),priceForPsWithWarranty*3);
+        cartPage.removedDeletedProduct();
+        Thread.sleep(2000);
+        Assert.assertEquals("В корзине Detroit продуктов",cartPage.getAmountOfCartProducts(),4);
     }
 }
